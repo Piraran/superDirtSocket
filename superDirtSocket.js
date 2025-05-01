@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 "use strict";
 process.title = 'superDirtSocket';
 var http = require('http');
@@ -11,7 +13,8 @@ var knownOpts = {
   "superCollider" : [Number, null],
   "qlc" : [Number, null],
   "ws-port" : [Number, null],
-  "verbose" : Boolean
+  "verbose" : Boolean,
+  "superDirtArgs" : [String, null]
 };
 var shortHands = {
   "h" : ["--help"],
@@ -29,6 +32,7 @@ function help() {
   console.log(" --qlc (-q) [number]           UDP port for sending OSC messages to QLC");
   console.log(" --websocket (-w) [number]     TCP port (WebSocket) to listen on (default: 7772)");
   console.log(" --verbose (-v)                console logging of messages received from Estuary");
+  console.log(" --superDirtArgs [string]      Custom SuperDirt Args (i.e. cc20), should be a path to JS module that exports an Object of {<arg>: <type>}, where type can be \"i\" or \"f\"");
   process.exit(1);
 }
 
@@ -44,6 +48,8 @@ var wsPort = parsed['ws-port'];
 if(wsPort==null) wsPort = 7772;
 var verbose = parsed['verbose'];
 if(verbose == null) verbose = false;
+var customArgs = parsed['superDirtArgs'] ? require(parsed['superDirtArgs']) : {};
+var customArgsEntries = Object.entries(customArgs);
 
 var sc;
 if(scPort!=null) {
@@ -64,6 +70,7 @@ function appendSuperDirtArg(superDirtArgName,oscType,sourceValue,targetArray) {
     targetArray.push({ type: oscType, value: sourceValue });
   }
 }
+
 
 function sendSuperDirtBundle(n) {
   if(n.s == null || n.s == "") return;
@@ -96,6 +103,11 @@ function sendSuperDirtBundle(n) {
   appendSuperDirtArg("cut","i",n.cut,args);
   appendSuperDirtArg("orbit","i",n.orbit,args);
   appendSuperDirtArg("cycle","i",n.cycle,args);
+  customArgsEntries.forEach(([arg, type]) => {
+    appendSuperDirtArg(arg,type,n[arg],args);
+  })
+  
+  
   var bundle = {
     timeTag: { native: n.when * 1000 + 300 },
     packets: [ { address: "/play2", args: args }]

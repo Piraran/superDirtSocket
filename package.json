@@ -1,6 +1,7 @@
 {
-    "name": "superDirtSocket",
-    "version": "0.0.1",
+    "name": "@diegovdc/superdirt-socket",
+    "version": "0.0.2",
+    "bin": {"superDirtSocket": "superDirtSocket.js"},
     "dependencies": {
 	"express": "*",
 	"ws": "*",
