@@ -6,6 +6,7 @@ var http = require('http');
 var WebSocket = require('ws');
 var nopt = require('nopt');
 var osc = require('osc');
+var path = require('path');
 
 // parse command-line options
 var knownOpts = {
@@ -48,7 +49,11 @@ var wsPort = parsed['ws-port'];
 if(wsPort==null) wsPort = 7772;
 var verbose = parsed['verbose'];
 if(verbose == null) verbose = false;
-var customArgs = parsed['superDirtArgs'] ? require(parsed['superDirtArgs']) : {};
+
+const superDirtArgsPath = path.resolve(process.cwd(), parsed['superDirtArgs']);
+console.info("Loading custom arguments from:", superDirtArgsPath)
+var customArgs = parsed['superDirtArgs'] ? require(superDirtArgsPath) : {};
+console.info("customArgs:", customArgs);
 var customArgsEntries = Object.entries(customArgs);
 
 var sc;
