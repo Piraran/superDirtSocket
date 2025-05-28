@@ -50,10 +50,10 @@ if(wsPort==null) wsPort = 7772;
 var verbose = parsed['verbose'];
 if(verbose == null) verbose = false;
 
-const superDirtArgsPath = path.resolve(process.cwd(), parsed['superDirtArgs']);
-console.info("Loading custom arguments from:", superDirtArgsPath)
+const superDirtArgsPath = parsed['superDirtArgs'] && path.resolve(process.cwd(), parsed['superDirtArgs']);
+parsed['superDirtArgs'] && console.info("Loading custom arguments from:", superDirtArgsPath)
 var customArgs = parsed['superDirtArgs'] ? require(superDirtArgsPath) : {};
-console.info("customArgs:", customArgs);
+parsed['superDirtArgs'] && console.info("customArgs:", customArgs);
 var customArgsEntries = Object.entries(customArgs);
 
 var sc;
